@@ -1,0 +1,2 @@
+{"text":"Write a Python function that adds two numbers.\n\n```python\ndef add(a, b):\n    return a + b\n```"}
+{"text":"Create a list and filter positive values.\n\n```python\nvalues = [-2, 0, 3]\npositive = [value for value in values if value > 0]\n```"}

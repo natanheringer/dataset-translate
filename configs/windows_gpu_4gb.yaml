@@ -1,0 +1,17 @@
+# Conservative profile for a 4 GB NVIDIA GPU.
+# Start here and raise batch_tokens only after a successful run.
+device: cuda
+compute_type: int8_float16
+batch_tokens: 1024
+max_batch_items: 128
+inflight: 1
+inter_threads: 1
+max_queued_batches: 2
+beam: 1
+no_repeat_ngram_size: 0
+fallback_no_repeat: 5
+max_decoding_length: 256
+max_decoding_ratio: 3.0
+tokenizer_threads: 2
+extract_code: true
+retry_repetitions: true

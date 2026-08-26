@@ -1,0 +1,11 @@
+model_repo: Helsinki-NLP/opus-mt-tc-big-en-pt
+quantization: int8_float16
+beam: 2
+no_repeat_ngram_size: 0
+fallback_no_repeat: 5
+batch_tokens: 8192
+inflight: 4
+inter_threads: 2
+max_queued_batches: 8
+extract_code: true
+retry_repetitions: true

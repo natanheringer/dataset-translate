@@ -1,0 +1,4 @@
+{"text":"Write a Python function that adds two numbers.\n\n```python\ndef add(a, b):\n    return a + b\n```"}
+{"text":"Create a small Bash script that checks whether a file exists.\n\n```bash\nif [ -f \"$1\" ]; then\n    echo \"File exists\"\nelse\n    echo \"File not found\"\nfi\n```"}
+{"text":"Explain why sorting a list before binary search is necessary.\n\nBinary search relies on the elements being ordered so that each comparison can discard half of the remaining range."}
+{"text":"Implement a JavaScript function that returns the largest value in an array.\n\n```javascript\nfunction largest(values) {\n    return Math.max(...values);\n}\n```"}
