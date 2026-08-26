@@ -18,11 +18,9 @@ The current profile is `code_anchor_en_pt`. It is a profile, not a requirement o
 
 ## Windows and 4 GB GPUs
 
-Windows is supported through the same Python entry point and PowerShell wrappers. Install a CUDA-enabled PyTorch/runtime environment appropriate for the NVIDIA driver, then install this package normally:
+Windows is supported through the same Python entry point and PowerShell wrappers. Install this package normally (a virtual environment is optional):
 
 ```powershell
-py -3.11 -m venv .venv
-.\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
 ```
 
@@ -42,9 +40,18 @@ Run a dataset with the conservative 4 GB profile:
   -Resume
 ```
 
-The `configs/windows_gpu_4gb.yaml` values are intentionally conservative: INT8 weights, FP16 compute, one worker, one in-flight batch, beam 1, and 1024 source tokens per batch. A 4 GB GPU should be able to load the converted model, but long inputs and retry batches can still cause an out-of-memory error. Raise `BatchTokens` gradually (`1024` → `1536` → `2048`) only after a successful run. If it still fails, use `-BatchTokens 512` and `-Beam 1`.
+The wrapper defaults to `-Device auto`: it tries CUDA with `int8_float16` and automatically retries with CPU `int8` when CUDA/cuBLAS is unavailable or fails. Use `-Device cpu` to skip CUDA, or `-Device cuda` to fail instead of falling back. The `configs/windows_gpu_4gb.yaml` values are intentionally conservative: INT8 weights, FP16 compute, one worker, one in-flight batch, beam 1, and 1024 source tokens per batch. A 4 GB GPU should be able to load the converted model, but long inputs and retry batches can still cause an out-of-memory error. Raise `BatchTokens` gradually (`1024` → `1536` → `2048`) only after a successful run. If it still fails, use `-BatchTokens 512` and `-Beam 1`.
 
-CPU fallback is available by calling the Python script with `--device cpu`, but it is intended for validation rather than bulk translation.
+For a CPU-only run:
+
+```powershell
+.\scripts\translate_windows.ps1 `
+  -Device cpu `
+  -Source example_templates `
+  -RawDir data `
+  -OutDir outputs\example_templates `
+  -Resume
+```
 
 ## Design
 

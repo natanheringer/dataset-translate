@@ -7,11 +7,13 @@ param(
     [string]$TargetSpm = "models/opus-mt-tc-big-en-pt-ct2/target.spm",
     [int]$BatchTokens = 1024,
     [int]$Beam = 1,
+    [ValidateSet("auto", "cuda", "cpu")]
+    [string]$Device = "auto",
     [switch]$Resume
 )
 
 $ErrorActionPreference = "Stop"
-$arguments = @(
+$baseArguments = @(
     "scripts/translate_anchors.py",
     "--src"; $Source,
     "--raw-dir"; $RawDir,
@@ -19,7 +21,6 @@ $arguments = @(
     "--model-dir"; $ModelDir,
     "--source-spm"; $SourceSpm,
     "--target-spm"; $TargetSpm,
-    "--compute-type"; "int8_float16",
     "--batch-tokens"; $BatchTokens,
     "--max-batch-items"; "128",
     "--inflight"; "1",
@@ -31,6 +32,22 @@ $arguments = @(
     "--tokenizer-threads"; "2",
     "--extract-code"
 )
-if ($Resume) { $arguments += "--resume" }
-python @arguments
-exit $LASTEXITCODE
+if ($Resume) { $baseArguments += "--resume" }
+
+function Invoke-Translation([string]$TargetDevice, [string]$ComputeType) {
+    $arguments = @($baseArguments + "--device" + $TargetDevice + "--compute-type" + $ComputeType)
+    python @arguments
+    return $LASTEXITCODE
+}
+
+if ($Device -eq "cpu") {
+    exit (Invoke-Translation "cpu" "int8")
+}
+
+$exitCode = Invoke-Translation "cuda" "int8_float16"
+if ($exitCode -eq 0 -or $Device -eq "cuda") {
+    exit $exitCode
+}
+
+Write-Warning "CUDA translation failed (exit code $exitCode). Retrying with CPU int8."
+exit (Invoke-Translation "cpu" "int8")
